@@ -1,76 +1,37 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'fileutils'
-require 'open-uri'
+require '../lib/url_file_reader'
+require '../lib/image_url_validator'
+require '../lib/image_downloader'
 
-IMAGE_EXTENSIONS = %w[jpg jpeg].freeze
+begin
+  class NoArgumentError < StandardError; end
 
-def valid_url?(url)
-  !!(url =~ URI::DEFAULT_PARSER.make_regexp(%w[http https]))
-end
-
-def valid_image_url?(url)
-  IMAGE_EXTENSIONS.include? File.extname(url)[1..]
-end
-
-def resource_by_url(url)
-  URI.parse(url).open
-rescue StandardError
-  nil
-end
-
-def accessible_url?(url)
-  res = resource_by_url(url)
-  return false if res.nil?
-
-  res.status.first == '200'
-end
-
-def directory_hierarchy_by(url)
-  uri = URI(url)
-  dir = File.dirname(uri.hostname + uri.path)
-  FileUtils.mkdir_p(dir).first
-end
-
-def save_image_from_url(url, dir)
-  img = File.basename(url)
-  file = File.join(dir, img)
-  File.open(file, 'wb') { |f| f.write(resource_by_url(url).read) }
-end
-
-unless (file = ARGV[0])
-  puts 'No arguments!'
-  exit 1
-end
-
-unless File.exist?(file)
-  puts 'File doesn\'t exist!'
-  exit 2
-end
-
-if File.zero?(file)
-  puts 'Input file is empty!'
-  exit 3
-end
-
-urls = File.readlines(file).map(&:chomp)
-urls.each do |url|
-  unless valid_url?(url)
-    puts "Invalid URL: #{url}!"
-    next
+  unless (file = ARGV[0])
+    raise NoArgumentError
   end
 
-  unless valid_image_url?(url)
-    puts "Invalid image URL: #{url}!"
-    next
+  urls = UrlFileReader.call(file)
+  valid_urls, invalid_urls = urls.partition { |url| ImageUrlValidator.call(url) }
+  fetched_urls, unfetched_urls = valid_urls.partition do |url|
+    ImageDownloader.call(url)
   end
 
-  unless accessible_url?(url)
-    puts "Inaccessible URL: #{url}!"
-    next
-  end
+  puts 'Image Fetcher processed URLs as follows:'
+  printf("%-20s", 'Downloaded:'); puts fetched_urls.count
+  printf("%-20s", 'Invalid:'); puts invalid_urls.count
+  printf("%-20s", 'Valid yet failed:'); puts unfetched_urls.count
 
-  dir = directory_hierarchy_by(url)
-  save_image_from_url(url, dir)
+rescue NoArgumentError
+  puts 'File with URLs wan\'t passed as an argument to the script!'
+rescue UrlFileReader::AbsentFileError
+  puts 'The argument file doesn\'t exist!'
+rescue UrlFileReader::EmptyFileError
+  puts 'The argument file is empty!'
+rescue StandardError => e
+  puts "Rescued: #{e.inspect}"
+
+ensure
+  puts "\n---\nTest assignment for Getsafe"
 end
