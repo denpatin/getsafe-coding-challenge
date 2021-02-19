@@ -19,9 +19,14 @@ begin
   end
 
   puts 'Image Fetcher processed URLs as follows:'
-  printf("%-20s", 'Downloaded:'); puts fetched_urls.count
-  printf("%-20s", 'Invalid:'); puts invalid_urls.count
-  printf("%-20s", 'Valid yet failed:'); puts unfetched_urls.count
+  printf('%-20s', 'Downloaded:')
+  puts fetched_urls.count
+
+  printf('%-20s', 'Invalid:')
+  puts invalid_urls.count
+
+  printf('%-20s', 'Valid yet failed:')
+  puts unfetched_urls.count
 
 rescue NoArgumentError
   puts 'File with URLs wan\'t passed as an argument to the script!'
