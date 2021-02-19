@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require '../lib/url_file_reader'
-require '../lib/image_url_validator'
-require '../lib/image_downloader'
+require './lib/url_file_reader'
+require './lib/image_url_validator'
+require './lib/image_downloader'
 
 begin
   class NoArgumentError < StandardError; end
