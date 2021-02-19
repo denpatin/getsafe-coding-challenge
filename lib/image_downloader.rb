@@ -21,15 +21,15 @@ class ImageDownloader
   private
 
   def storage_path
-    uri = URI @url
+    uri = URI url
     dir = File.dirname(uri.hostname + uri.path)
     FileUtils.mkdir_p(dir).first
   end
 
   def save_image(dir)
-    img_name = File.basename(@url)
+    img_name = File.basename(url)
     file = File.join(dir, img_name)
-    img = URI.parse(@url).open
+    img = URI.parse(url).open
     File.open(file, 'wb') { |f| f.write(img.read) }
     true
   rescue StandardError

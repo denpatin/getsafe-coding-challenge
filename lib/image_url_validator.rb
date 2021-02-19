@@ -22,15 +22,15 @@ class ImageUrlValidator
   private
 
   def valid_url?
-    (@url =~ URI::DEFAULT_PARSER.make_regexp(%w[http https])) != nil
+    (url =~ URI::DEFAULT_PARSER.make_regexp(%w[http https])) != nil
   end
 
   def valid_image_url?
-    ALLOWED_EXTENSIONS.any? { |ext| @url.end_with? ext }
+    ALLOWED_EXTENSIONS.any? { |ext| url.end_with? ext }
   end
 
   def accessible_url?
-    URI.parse(@url).open.status.first == '200'
+    URI.parse(url).open.status.first == '200'
   rescue StandardError
     false
   end

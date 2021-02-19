@@ -16,8 +16,8 @@ class UrlFileReader
   end
 
   def call
-    raise AbsentFileError unless File.exist?(@filename)
-    raise EmptyFileError if File.zero?(@filename)
+    raise AbsentFileError unless File.exist?(filename)
+    raise EmptyFileError if File.zero?(filename)
 
     parse_file_to_array
   end
@@ -25,6 +25,6 @@ class UrlFileReader
   private
 
   def parse_file_to_array
-    File.readlines(@filename).map(&:chomp)
+    File.readlines(filename).map(&:chomp)
   end
 end
