@@ -29,7 +29,7 @@ begin
   puts unfetched_urls.count
 
 rescue NoArgumentError
-  puts 'File with URLs wan\'t passed as an argument to the script!'
+  puts 'File with URLs wasn\'t passed as an argument to the script!'
 rescue UrlFileReader::AbsentFileError
   puts 'The argument file doesn\'t exist!'
 rescue UrlFileReader::EmptyFileError
